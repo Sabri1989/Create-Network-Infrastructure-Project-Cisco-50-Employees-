@@ -1,0 +1,51 @@
+hostname Access-SW2
+enable secret Cisco123
+
+! === Same VLANs ===
+vlan 10,20,30,40,99,100
+
+! === EtherChannel Uplink ===
+interface range gigabitEthernet 0/1-2
+ channel-group 1 mode active
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,40,100
+
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,40,100
+
+! === Sales Ports (VLAN 20) ===
+interface range gigabitEthernet 0/3-12
+ switchport mode access
+ switchport access vlan 20
+ switchport port-security
+ spanning-tree portfast
+
+! === HR Ports (VLAN 30) ===
+interface range gigabitEthernet 0/13-20
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+
+! === IT Ports (VLAN 10) ===
+interface range gigabitEthernet 0/21-22
+ switchport mode access
+ switchport access vlan 10
+
+! === Access Point ===
+interface gigabitEthernet 0/23
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,40
+
+! === Management ===
+interface vlan 100
+ ip address 192.168.100.12 255.255.255.240
+ip default-gateway 192.168.100.1
+
+spanning-tree portfast bpduguard default
+
+end
+write memory
