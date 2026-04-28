@@ -1,7 +1,7 @@
 hostname Edge-Router
 enable secret Cisco123
 
-! === WAN Interface (Internet) ===
+! ==== WAN Interface (Internet) ====
 interface gigabitEthernet 0/0/0
  description WAN_to_ISP
  ip address dhcp
