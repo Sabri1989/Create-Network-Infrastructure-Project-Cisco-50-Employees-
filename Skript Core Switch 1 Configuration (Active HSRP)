@@ -1,0 +1,85 @@
+! === Hostname & Basics ===
+hostname Core-SW1
+enable secret Cisco2014@Talin
+ip routing
+ip cef
+
+! === VLANs ===
+vlan 10,20,30,40,99,100
+vlan 10 name IT
+vlan 20 name Sales
+vlan 30 name HR
+vlan 40 name Guest
+vlan 99 name Native
+vlan 100 name Management
+
+! === SVI with HSRP (Active) ===
+interface vlan 10
+ ip address 192.168.10.2 255.255.255.192
+ standby 1 ip 192.168.10.1
+ standby 1 priority 110
+ standby 1 preempt
+ no shutdown
+
+interface vlan 20
+ ip address 192.168.20.2 255.255.255.192
+ standby 1 ip 192.168.20.1
+ standby 1 priority 110
+ standby 1 preempt
+
+interface vlan 30
+ ip address 192.168.30.2 255.255.255.224
+ standby 1 ip 192.168.30.1
+ standby 1 priority 110
+ standby 1 preempt
+
+interface vlan 40
+ ip address 192.168.40.2 255.255.255.224
+ standby 1 ip 192.168.40.1
+ standby 1 priority 100
+
+interface vlan 100
+ ip address 192.168.100.2 255.255.255.240
+ standby 1 ip 192.168.100.1
+ standby 1 priority 110
+ standby 1 preempt
+
+! === EtherChannel to Access Switches ===
+interface range gigabitEthernet 1/0/1-2
+ channel-group 1 mode active
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,40,100
+
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,40,100
+
+! === Connection to Edge Router ===
+interface gigabitEthernet 1/0/24
+ no switchport
+ ip address 192.168.0.2 255.255.255.252
+ no shutdown
+
+! === Default Route ===
+ip route 0.0.0.0 0.0.0.0 192.168.0.1
+
+! === Management & Security ===
+ip domain-name company.local
+crypto key generate rsa modulus 2048
+username admin secret Cisco123
+line vty 0 4
+ transport input ssh
+ login local
+line console 0
+ logging synchronous
+ exec-timeout 5 0
+
+! === SNMP Monitoring ===
+snmp-server community monitor RO
+snmp-server host 192.168.100.10 version 2c monitor
+
+end
+write memory
