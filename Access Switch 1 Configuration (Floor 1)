@@ -1,0 +1,64 @@
+hostname Access-SW1
+enable secret Cisco123
+
+vlan 10,20,30,40,99,100
+vlan 10 name IT
+vlan 20 name Sales
+vlan 30 name HR
+vlan 40 name Guest
+vlan 99 name Native
+vlan 100 name Management
+
+! === EtherChannel Uplink to Core ===
+interface range gigabitEthernet 0/1-2
+ channel-group 1 mode active
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,40,100
+
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,40,100
+
+! === IT Department Ports (VLAN 10) ===
+interface range gigabitEthernet 0/3-10
+ switchport mode access
+ switchport access vlan 10
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security violation restrict
+ spanning-tree portfast
+ no shutdown
+
+! === Sales Department Ports (VLAN 20) ===
+interface range gigabitEthernet 0/11-18
+ switchport mode access
+ switchport access vlan 20
+ switchport port-security
+ spanning-tree portfast
+
+! === HR Department Ports (VLAN 30) ===
+interface range gigabitEthernet 0/19-22
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+
+! === Access Point Port (Trunk for Employee + Guest) ===
+interface gigabitEthernet 0/23
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,40
+ no shutdown
+
+! === Management Interface ===
+interface vlan 100
+ ip address 192.168.100.11 255.255.255.240
+ip default-gateway 192.168.100.1
+
+! === Security Features ===
+spanning-tree portfast bpduguard default
+no cdp run
+
+end
+write memory
