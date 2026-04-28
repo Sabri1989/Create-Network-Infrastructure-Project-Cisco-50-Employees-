@@ -9,7 +9,7 @@ vlan 40 name Guest
 vlan 99 name Native
 vlan 100 name Management
 
-! ==== EtherChannel Uplink to Core ====
+! === EtherChannel Uplink to Core ===
 interface range gigabitEthernet 0/1-2
  channel-group 1 mode active
  switchport mode trunk
