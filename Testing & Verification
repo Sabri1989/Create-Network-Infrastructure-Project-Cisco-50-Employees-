@@ -1,0 +1,23 @@
+
+Source	Destination	Expected	Command	Result
+PC in VLAN 10	Gateway 192.168.10.1	Success	ping 192.168.10.1	✅
+PC in VLAN 10	PC in VLAN 20	Success (Inter-VLAN)	ping 192.168.20.x	✅
+PC in VLAN 10	8.8.8.8	Success (NAT)	ping 8.8.8.8	✅
+Guest Wi-Fi	PC in VLAN 10	Fail (Isolation)	ping 192.168.10.x	❌
+Guest Wi-Fi	Internet	Success	ping 8.8.8.8	✅
+
+
+Verification Commands
+
+! On Core Switch
+show vlan brief
+show ip route
+show standby brief
+show etherchannel summary
+show port-security
+
+! On Edge Router
+show ip nat translations
+show ip access-lists
+show dhcp binding
+show ip interface brief
