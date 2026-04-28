@@ -4,7 +4,7 @@ enable secret Cisco2014@Talin
 ip routing
 ip cef
 
-! ==== VLANs ====
+! === VLANs ===
 vlan 10,20,30,40,99,100
 vlan 10 name IT
 vlan 20 name Sales
