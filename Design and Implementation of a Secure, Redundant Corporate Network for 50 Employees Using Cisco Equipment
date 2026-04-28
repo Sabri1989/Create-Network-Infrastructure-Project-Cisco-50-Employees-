@@ -1,0 +1,49 @@
+1. Executive Summary
+Item	Details
+Project Name	Create Network Infrastructure for 50 Employees
+Objective	Build a stable, secure, scalable network for a company with 50 employees across 4 departments
+Technologies Used	Cisco Switching & Routing, VLANs, Inter-VLAN Routing, HSRP, EtherChannel, ACLs, NAT, Port Security, SSH, SNMP
+Environment	Real hardware (Cisco Catalyst 9300 L3 Switch + Cisco 4321 Router + Catalyst 2960-X Switches)
+Project Duration	4 weeks (design, implementation, testing, documentation)
+Readiness Level	Production-ready
+
+ Business Requirements
+Department	Number of Employees	Special Requirements
+IT	12	Full server access, network troubleshooting
+Sales	18	CRM access, internet, printers
+HR & Admin	10	High privacy, confidential files
+Guests	Variable	Internet only, no internal access
+Management	10	Prioritized bandwidth, special access
+
+
+Logical Design
+ VLANs and IP Subnets
+VLAN  ID	Name	Subnet	Gateway	Max Hosts
+10	  IT	      192.168.10.0/26	192.168.10.1	62
+20	  Sales    	192.168.20.0/26	192.168.20.1	62
+30	  HR	      192.168.30.0/27	192.168.30.1	30
+40	  Guest	    192.168.40.0/27	192.168.40.1	30
+99	  Native (Trunk)	 192.168.99.0/30	Unused	2
+100	  Management	     192.168.100.0/28	192.168.100.1	14
+
+
+Access Switch Port Distribution
+Access Switch 1 (Floor 1)	Access Switch 2 (Floor 2)
+Ports	VLAN	Ports	VLAN
+Gi0/1-8	10 (IT)	Gi0/1-10	20 (Sales)
+Gi0/9-16	20 (Sales)	Gi0/11-18	30 (HR)
+Gi0/17-20	30 (HR)	Gi0/19-20	10 (IT)
+Gi0/22	AP (Trunk 10,40)	Gi0/22	AP (Trunk 10,40)
+Gi0/24	Uplink to Core	Gi0/24	Uplink to Core
+
+
+Physical Design
+4.1 Hardware List
+Device	Model	Quantity	Role
+Core L3 Switch	Cisco Catalyst 9300-24S	2	Internal routing + distribution
+Edge Router	Cisco ISR 4321	1	Internet connectivity + NAT + Firewall
+Access Switch L2	Cisco Catalyst 2960-X 24-port	2	End-user connectivity
+Access Point	Cisco AIR-AP1832I	2	Wireless (employees + guests)
+Management Server	VM on VMware	1	AAA + Syslog + SNMP
+
+
